@@ -1,0 +1,240 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Projects
+{% endblock %}
+
+{% block body %}
+	<div>
+		<h4 style="display:inline">
+			{% if roleId == 1 %}
+				Projects
+			{% else %}
+				My Projects
+			{% endif %}
+
+
+		</h4>
+		{% if roleId == 1 %}
+
+			<button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#basicModal">
+				<i class="bi bi-plus"></i>
+			</button>
+			<div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true" style="display: none;">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="card">
+								<div class="card-body">
+									<h5 class="card-title">New Project</h5>
+
+									<!-- Floating Labels Form -->
+									<form method="post" action="/newproject" class="row g-3">
+										<div class="col-md-12">
+											<div class="form-floating">
+												<input type="text" class="form-control" name="name" id="floatingName" placeholder="Your Name">
+												<label for="floatingName">Project name</label>
+											</div>
+										</div>
+										<div class="col-12">
+											<div class="form-floating">
+												<textarea class="form-control" name="desc" placeholder="Address" id="floatingTextarea" style="height: 100px;"></textarea>
+												<label for="floatingTextarea">Description</label>
+											</div>
+										</div>
+										<div class="col-md-12">
+											<div class="form-floating">
+												<input type="Date" name="deadline" class="form-control" id="floatingCity" placeholder="Deadline">
+												<label for="floatingCity">Deadline</label>
+											</div>
+										</div>
+										<div class="text-center">
+											<button type="submit" class="btn btn-primary">Submit</button>
+											<button type="reset" class="btn btn-secondary">Reset</button>
+										</div>
+									</form>
+									<!-- End floating Labels Form -->
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+	</div>
+
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			{% if projets|length > 0 %}
+				{% if roleId == 1 %}
+					{% for item in projets %}
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">{{item.name}}</h5>
+
+								<strong>State :</strong>
+								{{item.state}}</h6>
+							<p class="card-text">
+								<strong>Description:
+								</strong>
+								<br>{{item.description}}</p>
+							<h6 class="card-subtitle mb-2 text-muted">
+								<strong>Deadline :</strong>
+								{{item.deadline|date('d-m-Y')}}</h6>
+							<h6>
+								<a href="/project/{{item.id}}" class="card-link">Details</a>
+								<a href="#" class="card-link text-success" data-bs-toggle="modal" data-bs-target="#p{{item.id}}">Modify</a>
+								<a href="/deleteproject/{{item.id}}" class="card-link text-danger" onclick=" return confirm('Are you sure?') ">Delete</a>
+
+
+							</div>
+							<div class="modal fade" id="p{{item.id}}" tabindex="-1" aria-hidden="true" style="display: none;">
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+											<div class="card">
+												<div class="card-body">
+													<h5 class="card-title">Modify Project</h5>
+
+													<!-- Floating Labels Form -->
+													<form method="get" action="/updateproject/{{item.id}}" class="row g-3">
+														<div class="col-md-12">
+															<div class="form-floating">
+																<input required type="text" name="name" class="form-control" id="floatingName" value="{{item.name}}">
+																<label for="floatingName">Project name</label>
+															</div>
+														</div>
+														<div class="col-12">
+															<div class="form-floating">
+																<textarea required class="form-control" name="desc" id="floatingTextarea" style="height: 100px;">{{item.description}}</textarea>
+																<label for="floatingTextarea">Description</label>
+															</div>
+														</div>
+														<div class="form-floating mb-3">
+															<select required value="{{item.state}}" name="state" class="form-select" id="floatingSelect" aria-label="Floating label select example">
+
+
+																<option {% if item.state =="DONE" %} selected {% endif %} value="DONE">DONE</option>
+																<option {% if item.state =="PENDING" %} selected {% endif %} value="PENDING">PENDING</option>
+
+															</select>
+															<label for="floatingSelect">State</label>
+														</div>
+														<div class="col-md-12">
+															<div class="form-floating">
+																<input required type="Date" name="deadline" class="form-control" id="floatingCity" value="{{item.deadline|date('d/m/Y')}}">
+																<label for="floatingCity">Deadline
+																	{{item.deadline|date('d/m/Y')}}</label>
+															</div>
+														</div>
+														<div class="text-center">
+															<button type="submit" class="btn btn-primary">Submit</button>
+														</div>
+													</form>
+													<!-- End floating Labels Form -->
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				{% else %}
+					{% for item in uu.getProjets() %}
+						{% if item.getChef() != null %}
+							{% if item.getChef().id == app.session.get("us").id %}
+								<div class="card">
+									<div class="card-body">
+										<h5 class="card-title">{{item.name}}</h5>
+
+										<strong>State :</strong>
+										{{item.state}}</h6>
+									<p class="card-text">
+										<strong>Description:
+										</strong>
+										<br>{{item.description}}</p>
+									<h6 class="card-subtitle mb-2 text-muted">
+										<strong>Deadline :</strong>
+										{{item.deadline|date('d-m-Y')}}</h6>
+									<h6>
+										<a href="/project/{{item.id}}" class="card-link">Details</a>
+										<a href="#" class="card-link text-success" data-bs-toggle="modal" data-bs-target="#p{{item.id}}">Modify</a>
+									</div>
+									<div class="modal fade" id="p{{item.id}}" tabindex="-1" aria-hidden="true" style="display: none;">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<div class="card">
+														<div class="card-body">
+															<h5 class="card-title">Modify Project</h5>
+
+															<!-- Floating Labels Form -->
+															<form method="get" action="/updateproject/{{item.id}}" class="row g-3">
+																<div class="col-md-12">
+																	<div class="form-floating">
+																		<input required type="text" name="name" class="form-control" id="floatingName" value="{{item.name}}">
+																		<label for="floatingName">Project name</label>
+																	</div>
+																</div>
+																<div class="col-12">
+																	<div class="form-floating">
+																		<textarea required class="form-control" name="desc" id="floatingTextarea" style="height: 100px;">{{item.description}}</textarea>
+																		<label for="floatingTextarea">Description</label>
+																	</div>
+																</div>
+																<div class="form-floating mb-3">
+																	<select required value="{{item.state}}" name="state" class="form-select" id="floatingSelect" aria-label="Floating label select example">
+
+
+																		<option {% if item.state =="DONE" %} selected {% endif %} value="DONE">DONE</option>
+																		<option {% if item.state =="PENDING" %} selected {% endif %} value="PENDING">PENDING</option>
+
+																	</select>
+																	<label for="floatingSelect">State</label>
+																</div>
+																<div class="col-md-12">
+																	<div class="form-floating">
+																		<input required type="Date" name="deadline" class="form-control" id="floatingCity" value="{{item.deadline|date('d/m/Y')}}">
+																		<label for="floatingCity">Deadline
+																			{{item.deadline|date('d/m/Y')}}</label>
+																	</div>
+																</div>
+																<div class="text-center">
+																	<button type="submit" class="btn btn-primary">Submit</button>
+																</div>
+															</form>
+															<!-- End floating Labels Form -->
+
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							{% endif %}
+						{% endif %}
+
+					{% endfor %}
+
+				{% endif %}
+
+			{% endif %}
+
+
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+{% endblock %}

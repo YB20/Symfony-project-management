@@ -1,0 +1,147 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Users
+{% endblock %}
+
+{% block body %}
+	<div>
+		<h4 style="display:inline">Users
+		</h4>
+		<button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#basicModal">
+			<i class="bi bi-plus"></i>
+		</button>
+		<div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true" style="display: none;">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">New User</h5>
+
+								<!-- Floating Labels Form -->
+								<form method="post" action="/newuser" class="row g-3">
+									<div class="col-md-12">
+										<div class="form-floating">
+											<input type="text" class="form-control" name="username" id="floatingName" placeholder="Username">
+											<label for="floatingName">Username</label>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-floating">
+											<input type="password" name="password" class="form-control" id="floatingCity" placeholder="Password">
+											<label for="floatingCity">Password</label>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-floating mb-3">
+											<select class="form-select" name="role" id="floatingSelect" aria-label="State">
+												<option selected value="2">User</option>
+												<option value="3">Chef Projet</option>
+												<option value="1">Admin</option>
+											</select>
+											<label for="floatingSelect">Role</label>
+										</div>
+									</div>
+									<div class="text-center">
+										<button type="submit" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-secondary">Reset</button>
+									</div>
+								</form>
+								<!-- End floating Labels Form -->
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{% if users|length > 0 %}
+		<div class="row mt-3">
+			<div class="col-lg-12">
+
+				<div class="card">
+					<table class="table">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">ID</th>
+								<th scope="col">USERNAME</th>
+								<th scope="col">PASSWORD</th>
+								<th scope="col">ROLE</th>
+								<th scope="col">ACTIONS</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for item in users %}
+								<tr>
+									<th scope="row">{{item.id}}</th>
+									<td>{{item.username}}</td>
+									<td>{{item.password}}</td>
+									<td>{{item.getRole().name}}</td>
+									<td>
+										<button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#u{{item.id}}">Modify</button>
+										<a type="button" href="/deleteuser/{{item.id}}" class="btn btn-danger" onclick=" return confirm('Are you sure?') ">Delete</a>
+									</td>
+								</tr>
+								<div class="modal fade" id="u{{item.id}}" tabindex="-1" aria-hidden="true" style="display: none;">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+											</div>
+											<div class="modal-body">
+												<div class="card">
+													<div class="card-body">
+														<h5 class="card-title">Modify User</h5>
+														<form method="get" action="/updateuser/{{item.id}}" class="row g-3">
+															<div class="col-md-12">
+																<div class="form-floating">
+																	<input required type="text" name="username" class="form-control" id="floatingName" value="{{item.username}}">
+																	<label for="floatingName">Username</label>
+																</div>
+															</div>
+															<br>
+															<div class="col-md-12">
+																<div class="form-floating">
+																	<input type="password" name="password" class="form-control" id="floatingCity" placeholder="Password" value="{{item.password}}">
+																	<label for="floatingCity">Password</label>
+																</div>
+															</div>
+															<br>
+															<div class="form-floating mb-3">
+																<select required name="role" class="form-select" id="floatingSelect" aria-label="Floating label select example">
+
+
+																	<option {% if item.getRole().name =="USER" %} selected {% endif %} value="2">User</option>
+																	<option {% if item.getRole().name =="CHEF PROJET" %} selected {% endif %} value="3">Chef Projet</option>
+																	<option {% if item.getRole().name =="ADMIN" %} selected {% endif %} value="1">Admin</option>
+
+																</select>
+																<label for="floatingSelect">Role</label>
+															</div>
+															<div class="text-center mt-2">
+																<button type="submit" class="btn btn-primary">Submit</button>
+															</div>
+														</form>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
+	{% else %}
+		<h3 class="text-center">Create a new user</h3>
+	{% endif %}
+
+{% endblock %}

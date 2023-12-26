@@ -1,0 +1,193 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Project details
+{% endblock %}
+
+{% block body %}
+
+	<div class="row">
+		<div class="col-md-8">
+			<div>
+				<h4 style="display:inline">Project Departments
+				</h4>
+				<button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#basicModal">
+					<i class="bi bi-plus">
+						Add Department</i>
+				</button>
+				<div class="modal fade" id="basicModal" tabindex="-1" aria-hidden="true" style="display: none;">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<div class="card">
+									<div class="card-body">
+										<h5 class="card-title">New Department</h5>
+
+										<!-- Floating Labels Form -->
+										<form method="get" action="/project/{{idp}}/newdepartement" class="row g-3">
+											<div class="col-md-12">
+												<div class="form-floating">
+													<input type="text" class="form-control" name="name" id="floatingName" placeholder="Your Name">
+													<label for="floatingName">Department name</label>
+												</div>
+											</div>
+											<div class="col-12">
+												<div class="form-floating">
+													<textarea class="form-control" name="desc" placeholder="Address" id="floatingTextarea" style="height: 100px;"></textarea>
+													<label for="floatingTextarea">Description</label>
+												</div>
+											</div>
+											<div class="text-center">
+												<button type="submit" class="btn btn-primary">Submit</button>
+												<button type="reset" class="btn btn-secondary">Reset</button>
+											</div>
+										</form>
+										<!-- End floating Labels Form -->
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% if departements|length > 0 %}
+				{% for item in departements %}
+					<div class="card mt-2">
+						<div class="card-body">
+							<h5 class="card-title">{{item.name}}</h5>
+							<p class="card-text">
+								<strong>Description:
+								</strong>
+								<br>{{item.description}}</p>
+							<a href="/departemt/{{item.id}}" class="card-link">Details</a>
+							<a href="#" class="card-link text-success" data-bs-toggle="modal" data-bs-target="#d{{item.id}}">Modify</a>
+							<a href="/project/{{idp}}/deletedepartemt/{{item.id}}" class="card-link text-danger" onclick=" return confirm('Are you sure?') ">Delete</a>
+						</div>
+						<div class="modal fade" id="d{{item.id}}" tabindex="-1" aria-hidden="true" style="display: none;">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<div class="card">
+											<div class="card-body">
+												<h5 class="card-title">Modify Department</h5>
+
+												<!-- Floating Labels Form -->
+												<form method="get" action="/project/{{idp}}/updatedepartment/{{item.id}}" class="row g-3">
+													<div class="col-md-12">
+														<div class="form-floating">
+															<input required type="text" name="name" class="form-control" id="floatingName" value="{{item.name}}">
+															<label for="floatingName">Department name</label>
+														</div>
+													</div>
+													<div class="col-12">
+														<div class="form-floating">
+															<textarea required class="form-control" name="desc" id="floatingTextarea" style="height: 100px;">{{item.description}}</textarea>
+															<label for="floatingTextarea">Description</label>
+														</div>
+													</div>
+													<div class="text-center">
+														<button type="submit" class="btn btn-primary">Submit</button>
+													</div>
+												</form>
+												<!-- End floating Labels Form -->
+
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				{% endfor %}
+			{% else %}
+				<div class="card mt-2">
+					<h3 class="text-center">Create a new department</h3>
+				</div>
+
+			{% endif %}
+
+		</div>
+		<div class="col-md-4">
+			<div>
+				<h4 style="display:inline">Project details
+				</h4>
+			</div>
+			<div class="card mt-3">
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item">
+						<strong>Name:</strong>
+						{{project.name}}
+					</li>
+					<li class="list-group-item">
+						<strong>Description:</strong>
+						{{project.description}}
+					</li>
+					<li class="list-group-item">
+						<strong>Deadline:</strong>
+						{{project.deadline|date("d/m/y")}}
+					</li>
+					<li class="list-group-item">
+						<strong>State:</strong>
+						{{project.state}}
+					</li>
+				</ul>
+			</div>
+			{% if roleId == 1 %}
+				<div class="card p-2">
+					{% if project.getChef()==null %}
+						<button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addChef">Add A Chef Project
+						</button>
+						<div class="modal fade" id="addChef" tabindex="-1" aria-hidden="true" style="display: none;">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<div class="card">
+											<div class="card-body">
+												<h5 class="card-title">New Chef Project</h5>
+
+												<!-- Floating Labels Form -->
+												<form method="get" action="/project/{{idp}}/chefproject" class="row g-3">
+													<div class="col-md-12">
+														<select required id="inputState" name="chef" class="form-select">
+															{% for item in chef %}
+																<option value="{{item.id}}">{{item.username}}</option>
+															{% endfor %}
+
+														</select>
+													</div>
+													<div class="text-center">
+														<button type="submit" class="btn btn-primary">Submit</button>
+														<button type="reset" class="btn btn-secondary">Reset</button>
+													</div>
+												</form>
+												<!-- End floating Labels Form -->
+
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% else %}
+						<h5 class="card-title text-center">Chef Project :
+							{{project.getChef().username}}
+							<a type="button" class="btn btn-danger" href="/project/{{project.id}}/removechef" onclick=" return confirm('Are you sure?') ">Delete</a>
+						</h5>
+
+					{% endif %}
+				</div>
+			{% endif %}
+
+
+		</div>
+	</div>
+{% endblock %}
